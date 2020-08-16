@@ -97,7 +97,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "wgblog.users.apps.UsersConfig",
-    # Your stuff: custom apps go here
+    "flex.apps.FlexConfig"
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -265,7 +265,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
+                      "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -277,7 +277,6 @@ LOGGING = {
     },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
-
 
 # django-allauth
 # ------------------------------------------------------------------------------

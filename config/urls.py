@@ -3,16 +3,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
-from wagtail.documents import urls as wagtaildocs_urls  # noqa isort:skip
-from wagtail.core import urls as wagtail_urls  # noqa isort:skip
 from wagtail.admin import urls as wagtailadmin_urls  # noqa isort:skip
+from wagtail.core import urls as wagtail_urls  # noqa isort:skip
+from wagtail.documents import urls as wagtaildocs_urls  # noqa isort:skip
 
 from wgblog.search import views as search_views  # noqa isort:skip
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="home/home_page.html"), name="home"),
     # Django Admin, use {% url "admin:index" %}
     path(settings.DJANGO_ADMIN_URL, admin.site.urls),
     # Wagtail Admin
