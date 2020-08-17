@@ -97,7 +97,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "wgblog.users.apps.UsersConfig",
-    "flex.apps.FlexConfig"
+    "flex.apps.FlexConfig",
+    "streams.apps.StreamsConfig"
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
