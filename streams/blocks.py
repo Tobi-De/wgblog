@@ -1,4 +1,5 @@
 from wagtail.core import blocks
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class TitleAndTextBlock(blocks.StructBlock):
@@ -8,6 +9,32 @@ class TitleAndTextBlock(blocks.StructBlock):
     class Meta:
         icon = "edit"
         label = "Title & Text"
+
+
+class CardBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=True, help_text="add your title")
+    cards = blocks.ListBlock(
+        blocks.StructBlock(
+            [
+                ("image", ImageChooserBlock(required=True)),
+                ("title", blocks.CharBlock(required=True, max_length=40)),
+                ("text", blocks.TextBlock(required=True, max_length=200)),
+                ("button_page", blocks.PageChooserBlock(required=False)),
+                (
+                    "button_url",
+                    blocks.URLBlock(
+                        required=False,
+                        help_text="If the button page above is selected, that will be used",
+                    ),
+                ),
+            ]
+        )
+    )
+
+    class Meta:
+        template = "streams/card_block.html"
+        icon = "edit"
+        label = "Card Decks"
 
 
 class RichTextBlock(blocks.RichTextBlock):
@@ -39,3 +66,16 @@ class SimpleRichTextBlock(blocks.RichTextBlock):
             **kwargs
         )
         self.features = ["bold", "italic", "link"]
+
+
+class CTABlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=True, max_length=60)
+    text = blocks.RichTextBlock(required=True, features=["bold", "italic"])
+    button_page = blocks.PageChooserBlock(required=False)
+    button_url = blocks.URLBlock(required=False)
+    button_text = blocks.CharBlock(required=True, default="Learn More")
+
+    class Meta:
+        template = "streams/cta_block.html"
+        icon = "placeholder"
+        label = "Call to Action"

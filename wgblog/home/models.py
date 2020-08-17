@@ -1,8 +1,31 @@
 from django.db import models
-from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel
+from modelcluster.fields import ParentalKey
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    PageChooserPanel,
+    StreamFieldPanel,
+    InlinePanel,
+    MultiFieldPanel,
+)
 from wagtail.core.fields import RichTextField
+from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.images.edit_handlers import ImageChooserPanel
+
+from streams.blocks import CTABlock
+
+
+class HomePageCarouselImages(Orderable):
+    page = ParentalKey("home.HomePage", related_name="carousel_images")
+    carousel_image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    panels = [ImageChooserPanel("carousel_image")]
 
 
 class HomePage(Page):
@@ -22,11 +45,23 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name="+",
     )
+    content = StreamField([("cta", CTABlock())], null=True, blank=True,)
+
     max_count = 1
 
     content_panels = Page.content_panels + [
-        FieldPanel("banner_title"),
-        FieldPanel("banner_subtitle"),
-        ImageChooserPanel("banner_image"),
-        PageChooserPanel("banner_cta")
+        MultiFieldPanel(
+            [
+                FieldPanel("banner_title"),
+                FieldPanel("banner_subtitle"),
+                ImageChooserPanel("banner_image"),
+                PageChooserPanel("banner_cta"),
+            ],
+            heading="Banner Options",
+        ),
+        MultiFieldPanel(
+            [InlinePanel("carousel_images", max_num=5, min_num=1, label="Image")],
+            heading="Carousel Images",
+        ),
+        StreamFieldPanel("content"),
     ]
