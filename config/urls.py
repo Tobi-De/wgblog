@@ -7,6 +7,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from wagtail.admin import urls as wagtailadmin_urls  # noqa isort:skip
 from wagtail.core import urls as wagtail_urls  # noqa isort:skip
 from wagtail.documents import urls as wagtaildocs_urls  # noqa isort:skip
+from wagtail.contrib.sitemaps.views import sitemap
 
 from wgblog.search import views as search_views  # noqa isort:skip
 
@@ -24,14 +25,9 @@ urlpatterns = [
     path("api/", include("config.api_router")),
     # DRF auth token
     path("auth-token/", obtain_auth_token),
-    # Your stuff: custom urls includes go here
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail’s page serving mechanism. This should be the last pattern in
-    # the list:
+    # wagtail
+    re_path(r"^sitemap.xml$", sitemap),
     path("", include(wagtail_urls)),
-    # Alternatively, if you want Wagtail pages to be served from a subpath
-    # of your site, rather than the site root:
-    #    url(r"^pages/", include(wagtail_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

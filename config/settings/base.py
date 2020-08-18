@@ -63,6 +63,8 @@ WAGTAIL = [
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
     "wagtail.contrib.modeladmin",
+    "wagtail.contrib.routable_page",
+    "wagtail.contrib.sitemaps",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -86,6 +88,7 @@ DJANGO_APPS = [
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
+    "django.contrib.sitemaps"
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -102,7 +105,8 @@ LOCAL_APPS = [
     "flex.apps.FlexConfig",
     "streams.apps.StreamsConfig",
     "site_settings.apps.SiteSettingsConfig",
-    "subscribers.apps.SubscribersConfig"
+    "subscribers.apps.SubscribersConfig",
+    "blog.apps.BlogConfig"
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

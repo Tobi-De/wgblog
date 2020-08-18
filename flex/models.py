@@ -8,7 +8,7 @@ from streams.blocks import (
     RichTextBlock,
     SimpleRichTextBlock,
     CardBlock,
-    CTABlock
+    CTABlock, ButtonBlock
 )
 
 
@@ -21,7 +21,8 @@ class FlexPage(Page):
             ("full_richtext", RichTextBlock()),
             ("simple_richtext", SimpleRichTextBlock()),
             ("cards", CardBlock()),
-            ("cta", CTABlock())
+            ("cta", CTABlock()),
+            ("button", ButtonBlock())
         ],
         null=True,
         blank=True,

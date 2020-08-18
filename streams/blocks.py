@@ -79,3 +79,29 @@ class CTABlock(blocks.StructBlock):
         template = "streams/cta_block.html"
         icon = "placeholder"
         label = "Call to Action"
+
+
+class LinkStructValue(blocks.StructValue):
+    def url(self):
+        button_page = self.get("button_page")
+        button_url = self.get("button_url")
+        return button_page if button_page else button_url
+
+    # def latests(self):
+    #     return BlogDetailPage.objects.live().public()[:3]
+
+
+class ButtonBlock(blocks.StructBlock):
+    button_page = blocks.PageChooserBlock(required=False)
+    button_url = blocks.URLBlock(required=False)
+
+    # def get_context(self, request, *args, **kwargs):
+    #     context = super().get_context(request, *args, **kwargs)
+    #     context["latest"] = BlogDetailPage.objects.live().public()[:3]
+    #     return context
+
+    class Meta:
+        template = "streams/button_block.html"
+        icon = "placeholder"
+        label = "Single Button"
+        value_class = LinkStructValue

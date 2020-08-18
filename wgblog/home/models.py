@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import render
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import (
     FieldPanel,
@@ -7,6 +8,7 @@ from wagtail.admin.edit_handlers import (
     InlinePanel,
     MultiFieldPanel,
 )
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import RichTextField
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
@@ -28,7 +30,7 @@ class HomePageCarouselImages(Orderable):
     panels = [ImageChooserPanel("carousel_image")]
 
 
-class HomePage(Page):
+class HomePage(RoutablePageMixin, Page):
     banner_title = models.CharField(max_length=100, blank=True, null=True)
     banner_subtitle = RichTextField(features=["bold", "italic"])
     banner_image = models.ForeignKey(
@@ -45,7 +47,7 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name="+",
     )
-    content = StreamField([("cta", CTABlock())], null=True, blank=True,)
+    content = StreamField([("cta", CTABlock())], null=True, blank=True, )
 
     max_count = 1
 
@@ -65,3 +67,9 @@ class HomePage(Page):
         ),
         StreamFieldPanel("content"),
     ]
+
+    @route(r'^subscribe/$', name="subscribe")
+    def the_subscribe_page(self, request, *args, **kwargs):
+        context = self.get_context(request, *args, **kwargs)
+        context["text"] = "text"
+        return render(request, "home/subscribe.html", context)
