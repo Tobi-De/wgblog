@@ -10,6 +10,23 @@
     <div class="text-center">
       {{ self.custom_title }}
     </div>
+    <div>
+      <ul>
+        {% for obj in self.blog_authors.all %}
+          {% image obj.author.image fill-100x100 as img %}
+          <li><img src="{{ img.url }}" alt="{{ obj.author.name }}">
+            {{ obj.author.name }}{% if obj.author.website %}
+              <a href="{{ obj.author.website }}">(Website)</a>{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <h2>Categories</h2>
+    <ul>
+      {% for cat in self.categories.all %}
+        <li><a href="{{ self.get_parent.url }}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+      {% endfor %}
+    </ul>
+    <hr>
     {% for block in self.content %}
       {% include_block block %}
     {% endfor %}

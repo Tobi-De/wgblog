@@ -1,11 +1,16 @@
+from django import forms
 from django.db import models
 from django.shortcuts import render
-from wagtail.admin.edit_handlers import FieldPanel
-from wagtail.admin.edit_handlers import StreamFieldPanel
+from django_extensions.db.fields import AutoSlugField
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel
+from wagtail.admin.edit_handlers import StreamFieldPanel, InlinePanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.snippets.models import register_snippet
 
 from streams.blocks import (
     TitleAndTextBlock,
@@ -16,6 +21,59 @@ from streams.blocks import (
 )
 
 
+class BlogAuthorOrderable(Orderable):
+    page = ParentalKey("blog.BlogDetailPage", related_name="blog_authors")
+    author = models.ForeignKey("blog.BlogAuthor", on_delete=models.CASCADE)
+
+    panels = [
+        SnippetChooserPanel("author"),
+    ]
+
+
+class BlogAuthor(models.Model):
+    name = models.CharField(max_length=120)
+    website = models.URLField(blank=True, null=True)
+    image = models.ForeignKey("wagtailimages.Image", null=True, related_name="+", on_delete=models.SET_NULL)
+
+    panels = [
+        MultiFieldPanel([
+            FieldPanel("name"),
+            ImageChooserPanel("image")
+        ], heading="Name and Image"),
+        MultiFieldPanel([
+            FieldPanel("website")
+        ], heading="Links")
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Blog Authors"
+
+
+register_snippet(BlogAuthor)
+
+
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=100)
+    slug = AutoSlugField(populate_from=["name"])
+
+    panels = [
+        FieldPanel("name")
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Blog Categories"
+        ordering = ["name"]
+
+
+register_snippet(BlogCategory)
+
+
 class BlogListingPage(RoutablePageMixin, Page):
     custom_title = models.CharField(max_length=100)
 
@@ -24,6 +82,7 @@ class BlogListingPage(RoutablePageMixin, Page):
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
         context["posts"] = BlogDetailPage.objects.live().public()
+        # context["categories"] = context
         return context
 
     @route(r"^latest/$", name="latest")
@@ -50,6 +109,7 @@ class BlogDetailPage(Page):
         on_delete=models.SET_NULL,
         related_name="+",
     )
+    categories = ParentalManyToManyField("blog.BlogCategory", blank=True)
 
     content = StreamField(
         [
@@ -66,5 +126,11 @@ class BlogDetailPage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
         ImageChooserPanel("blog_image"),
+        MultiFieldPanel([
+            InlinePanel("blog_authors", label="Author", min_num=1, max_num=4)
+        ], heading="Author(s)"),
+        MultiFieldPanel([
+            FieldPanel("categories", widget=forms.CheckboxSelectMultiple)
+        ], heading="Categories"),
         StreamFieldPanel("content")
     ]
